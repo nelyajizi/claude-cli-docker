@@ -31,10 +31,12 @@ First run will ask you to auth Claude Code in a browser. Your session persists i
 
 ### Advanced flags
 ```bash
---permission-mode [ask|plan|skip]   # Control how Claude handles dangerous operations
+--no-ask-unsafe                      # Skip all permission prompts (auto-approve)
+--permission-mode [ask|allow|deny]  # Control how Claude handles dangerous operations
 --model claude-3-5-sonnet-20240620  # Specify model version
 --max-turns 10                      # Limit conversation length
 --allowedTools shell,fs,git         # Restrict tool access
+--continue                          # Continue last session
 ```
 
 ## 🛠️ Development Features
@@ -58,7 +60,7 @@ First run will ask you to auth Claude Code in a browser. Your session persists i
 - **System**: strace, ltrace, lsof, htop, iotop  
 - **Memory**: valgrind for leak detection
 - **Network**: tcpdump, netcat, socat
-- **Text Processing**: jq, tree, bat, hexdump
+- **Text Processing**: jq, tree, bat, xxd
 
 ## 📋 Usage Examples
 
@@ -232,13 +234,23 @@ CLAUDE_IMAGE="claude-cli:custom" ./run-claude.sh
 WORKDIR="/path/to/project" ./run-claude.sh
 ```
 
-### Development Containers
+### Permission Modes
 ```bash
-# Skip permission prompts (use carefully)
-./run-claude.sh --permission-mode skip
+# Skip all permission prompts (use carefully)
+./run-claude.sh --no-ask-unsafe
 
-# Limit resource usage
-./run-claude.sh --max-turns 5 --allowedTools fs,git
+# Allow all operations without prompting
+./run-claude.sh --permission-mode allow
+
+# Deny all operations that would need permission
+./run-claude.sh --permission-mode deny
+
+# Ask for each permission (default behavior)
+./run-claude.sh --permission-mode ask
+
+# Combine with other flags
+./run-claude.sh --no-ask-unsafe --continue
+./run-claude.sh --no-ask-unsafe -p "Fix all linting errors"
 ```
 
 ## 📦 Standalone Usage
@@ -268,7 +280,8 @@ claude-cli-docker/
 ## 🔍 Troubleshooting
 
 ### Common Issues
-- **Permission errors**: Build runs with your UID/GID to avoid file ownership issues
+- **Permission errors**: The container uses the `node` user (UID/GID 1000) to avoid file ownership issues
 - **SSH not working**: Ensure SSH agent is running or ~/.ssh exists  
 - **GitHub auth**: Run `gh auth login` on host before mounting config
 - **Large builds**: Increase Docker resource limits if builds fail
+- **Python packages**: Uses `--break-system-packages` flag for system-wide installations in container

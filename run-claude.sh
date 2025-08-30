@@ -17,18 +17,18 @@ mkdir -p "$CLAUDE_HOME"
 # Reuse your GitHub CLI auth (optional)
 GH_CONFIG="${GH_CONFIG:-$HOME/.config/gh}"
 GH_MOUNT=()
-[ -d "$GH_CONFIG" ] && GH_MOUNT=(-v "$GH_CONFIG:/home/dev/.config/gh")
+[ -d "$GH_CONFIG" ] && GH_MOUNT=(-v "$GH_CONFIG:/home/node/.config/gh")
 
 # Reuse your git identity (optional)
 GITCONFIG_MOUNT=()
-[ -f "$HOME/.gitconfig" ] && GITCONFIG_MOUNT=(-v "$HOME/.gitconfig:/home/dev/.gitconfig:ro")
+[ -f "$HOME/.gitconfig" ] && GITCONFIG_MOUNT=(-v "$HOME/.gitconfig:/home/node/.gitconfig:ro")
 
 # SSH auth (preferred for git push). Tries agent first, then keys.
 SSH_FLAGS=()
 if [ -n "${SSH_AUTH_SOCK:-}" ] && [ -S "$SSH_AUTH_SOCK" ]; then
   SSH_FLAGS=(-v "$SSH_AUTH_SOCK:/ssh-agent" -e SSH_AUTH_SOCK=/ssh-agent)
 elif [ -d "$HOME/.ssh" ]; then
-  SSH_FLAGS=(-v "$HOME/.ssh:/home/dev/.ssh:ro")
+  SSH_FLAGS=(-v "$HOME/.ssh:/home/node/.ssh:ro")
 fi
 
 # TTY flags
@@ -40,7 +40,7 @@ ENV_FLAGS=(-e CC=gcc -e CXX=g++)
 
 exec docker run --rm "${TTY_FLAGS[@]}" \
   -v "$WORKDIR:/work" -w /work \
-  -v "$CLAUDE_HOME:/home/dev/.claude" \
+  -v "$CLAUDE_HOME:/home/node/.claude" \
   "${GH_MOUNT[@]}" \
   "${GITCONFIG_MOUNT[@]}" \
   "${SSH_FLAGS[@]}" \

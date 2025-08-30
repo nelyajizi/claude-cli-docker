@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(git init:*)",
+      "Bash(git push:*)",
+      "Bash(./build.sh)",
+      "Bash(docker run:*)",
+      "Bash(./run.sh:*)",
+      "Bash(./run-claude.sh:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

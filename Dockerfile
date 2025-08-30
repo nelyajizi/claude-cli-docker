@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # Python support
     python3 python3-pip python3-venv python3-dev \
     # Text processing & utilities  
-    jq tree fd-find bat hexdump xxd \
+    jq tree fd-find bat xxd \
     # Debugging & profiling tools
     lldb valgrind strace ltrace lsof \
     # Network debugging
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Python development tools
-RUN python3 -m pip install --no-cache-dir \
+RUN python3 -m pip install --no-cache-dir --break-system-packages \
     pytest pytest-cov pytest-benchmark \
     black isort flake8 mypy \
     requests httpx \
@@ -51,12 +51,9 @@ RUN mkdir -p -m 0755 /etc/apt/keyrings \
 RUN npm install -g @anthropic-ai/claude-code
 
 # Non-root user (avoid root-owned files on mounted volumes)
-ARG UID=1000
-ARG GID=1000
-RUN groupadd -g ${GID} dev && useradd -m -u ${UID} -g ${GID} -s /bin/bash dev
-USER dev
+USER node
 
-ENV HOME=/home/dev
+ENV HOME=/home/node
 WORKDIR /work
 
 # Run Claude Code CLI by default
